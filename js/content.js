@@ -1,8 +1,19 @@
+'use strict';
+
 var globalTimer = null,
 	counter = 0;
 
 var ContentScript = (function() {
 	var _data = [],
+		returndata = function() {
+			chrome.extension.sendMessage({
+				from: "cs",
+				action: "feed_data",
+				data: getData()
+			}, function(response) {
+				console.log(response);
+			});
+		},
 		lexis = function() {
 			var $dataContainer = $("div#shepListView");
 
@@ -21,7 +32,7 @@ var ContentScript = (function() {
 					}
 				}
 			}
-			return _data;
+			returndata();
 		},
 		westlaw = function() {
 			var $dataContainer = $("table#co_relatedInfo_table_citingRefs");
@@ -33,7 +44,7 @@ var ContentScript = (function() {
 
 			clearInterval(globalTimer);
 			counter = 0;
-			
+
 			var $records = $dataContainer.find("tbody tr td.co_detailsTable_content");
 			_data = [];
 
@@ -44,11 +55,14 @@ var ContentScript = (function() {
 				}
 			}
 
-			return _data;
+			returndata();
 		},
 		init = function() {
 			console.log("init");
 			return this;
+		},
+		getData = function() {
+			return _data;
 		},
 		analyze = function() {
 			if (window.location.host.indexOf("advance.lexis.com") === 0) {
@@ -60,7 +74,8 @@ var ContentScript = (function() {
 		
 	return {
 		init: init,
-		analyze: analyze
+		analyze: analyze,
+		data: getData
 	};
 })();
 
