@@ -2,10 +2,44 @@
 <html>
 <head>
 	<title>Citation Search Options</title>
+	<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/css/options.css">
 </head>
-
 <body>
+	<div class="container">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h2>Please check citations you copied.</h2>
+			</div>
+			<div class="panel-body">
+				<table id="data-table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Name</th>
+							<th>Citation</th>
+							<th>Copied At</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+			<div class="panel-footer">
+				<div class="row">
+					<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+						<button class="btn btn-success form-control">Something</button>
+					</div>
+					<div class="col-lg-2 col-lg-offset-8 col-md-3 col-md-offset-6 col-sm-4 col-sm-offset-4 col-xs-6">
+						<button class="btn btn-success form-control">Export</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	<script src="/js/jquery.js"></script>
+	<script src="/js/bootstrap.min.js"></script>
 	<script src="/js/options.js"></script>
 </body>
 </html>
