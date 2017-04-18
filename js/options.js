@@ -42,6 +42,11 @@
 				document.execCommand('copy');
 				$(this).addClass("copied").text("Copied");
 			})
+			.on("click", "button.action-delete", function() {
+				if (confirm("Are you sure that you want to delete the citation?")) {
+					console.log("Should be removed from data source and table.");
+				}
+			})
 			drawTable();
 		};
 
