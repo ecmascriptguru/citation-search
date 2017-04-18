@@ -9,6 +9,7 @@
 			chrome.extension.sendMessage({
 				from: "popup",
 				action: "copy",
+				title: $(this).attr('data-title'),
 				data: $citation.text()
 			}, function(response) {
 				$(this).addClass("copied").text("Copied");

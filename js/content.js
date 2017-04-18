@@ -53,12 +53,12 @@ var ContentScript = (function() {
 			_data = [];
 
 			for (var i = 0; i < $records.length; i ++) {
-				var tempCitation = $records.eq(i).find("div.co_snippet a.co_snippet_link span.co_searchTerm"),
+				var $tempCitation = $records.eq(i).find("div.co_snippet a.co_snippet_link span.co_searchTerm"),
 					$name = $records.eq(i).find("a.co_relatedInfo_grid_documentLink");
 				if (_data.indexOf($tempCitation.text()) == -1) {
 					_data.push({
 						title: $name.text().trim(),
-						citation: tempCitation.text().trim()
+						citation: $tempCitation.text().trim()
 					});
 				}
 			}
