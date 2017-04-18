@@ -6,7 +6,13 @@
 			$citation.select();
 			$("li.item button.copied").removeClass("copied").text("Copy");
 			document.execCommand('copy');
-			$(this).addClass("copied").text("Copied");
+			chrome.extension.sendMessage({
+				from: "popup",
+				action: "copy",
+				data: $citation.text()
+			}, function(response) {
+				$(this).addClass("copied").text("Copied");
+			});
 		},
 		displayData = function(data) {
 			var $list = $("ul.list");
@@ -14,8 +20,8 @@
 
 			for (var i = 0; i < data.length; i ++) {
 				var $item = $("<li/>").addClass("item row"),
-					$citation = $("<textarea/>").addClass("form-control citation").text(data[i]),
-					$copyBtn = $("<button/>").addClass("btn btn-info form-control copy").text("Copy");
+					$citation = $("<textarea/>").addClass("form-control citation").text(data[i].citation),
+					$copyBtn = $("<button/>").addClass("btn btn-info form-control copy").attr('data-title', data[i].title).text("Copy");
 
 				$item.append(
 					$("<div/>").addClass("col-xs-9").append($citation),

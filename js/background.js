@@ -2,8 +2,24 @@
 
 var Citation = (function() {
 	var _data = [],
+		_savedData = JSON.parse(localStorage._saved_data || "[]"),
+		setSavedData = function(data) {
+			localStorage._saved_data = JSON.stringify(data || []);
+		},
+		getSavedData = function() {
+			return JSON.parse(localStorage._saved_data) || [];
+		},
 		setData = function(data) {
 			_data = data;
+		},
+		copy = function(text) {
+			curSavedData = getSavedData();
+			curSavedData.push({
+				name: "Not set",
+				citation: text,
+				copied_at: new Date().toISOString().slice(0, 10)
+			});
+			setSavedData(curSavedData);
 		},
 		getData = function() {
 			return _data;
@@ -15,7 +31,9 @@ var Citation = (function() {
 	return {
 		init: init,
 		setData: setData,
-		getData: getData
+		getData: getData,
+		setSavedData: setSavedData,
+		getSavedData: getSavedData
 	};
 })();
 
@@ -36,6 +54,8 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
 		case "popup":
 			if (message.action == "get_data") {
 				sendResponse({data: Citation.getData()});
+			} else if (message.action == "copy") {
+				Citation.copy(message.data);
 			}
 			break;
 

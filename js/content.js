@@ -26,9 +26,13 @@ var ContentScript = (function() {
 			_data = [];
 			for (var i = 0; i < $dataRecords.length; i++) {
 				if ($dataRecords.eq(i).find("a.citedby").text().toLowerCase().indexOf("cited by") > -1) {
-					var temp = $dataRecords.eq(i).find("span.hit");
-					if (_data.indexOf(temp.text()) == -1) {
-						_data.push(temp.text());
+					var $tempCitation = $dataRecords.eq(i).find("span.hit"),
+						$title = $dataRecords.eq(i).find("h2.doc-title");
+					if (_data.indexOf($tempCitation.text()) == -1) {
+						_data.push({
+							title: $title.find("span").eq(0).text(),
+							citation: $tempCitation.text().trim()
+						});
 					}
 				}
 			}
@@ -49,9 +53,13 @@ var ContentScript = (function() {
 			_data = [];
 
 			for (var i = 0; i < $records.length; i ++) {
-				var temp = $records.eq(i).find("div.co_snippet a.co_snippet_link span.co_searchTerm");
-				if (_data.indexOf(temp.text()) == -1) {
-					_data.push(temp.text());
+				var tempCitation = $records.eq(i).find("div.co_snippet a.co_snippet_link span.co_searchTerm"),
+					$name = $records.eq(i).find("a.co_relatedInfo_grid_documentLink");
+				if (_data.indexOf($tempCitation.text()) == -1) {
+					_data.push({
+						title: $name.text().trim(),
+						citation: tempCitation.text().trim()
+					});
 				}
 			}
 
