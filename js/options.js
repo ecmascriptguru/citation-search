@@ -27,11 +27,21 @@
 
 		init = function() {
 			_dataTable = $('#data-table').DataTable();
-			$("#data-table tbody").on("change", "textarea.citation", function() {
+			$("#data-table tbody")
+			.on("change", "textarea.citation", function() {
 				var index = parseInt($(this).attr('data-id')),
 					citation = $(this).val();
 				changeData(index, citation);
-			});
+			})
+			.on("click", "button.action-copy", function() {
+				var $curRow = $(this).parents("tr"),
+					$curCitation = $curRow.find("textarea.citation");
+
+				$curCitation.select();
+				$("button.action-copy.copied").removeClass("copied").text("Copy");
+				document.execCommand('copy');
+				$(this).addClass("copied").text("Copied");
+			})
 			drawTable();
 		};
 
