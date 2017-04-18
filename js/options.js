@@ -25,6 +25,13 @@
 			localStorage._saved_data = JSON.stringify(_data);
 		},
 
+		deleteData = function(index) {
+			var _data = JSON.parse(localStorage._saved_data || "[]");
+			_data.splice(index, 1);
+			localStorage._saved_data = JSON.stringify(_data);
+			drawTable();
+		},
+
 		init = function() {
 			_dataTable = $('#data-table').DataTable();
 			$("#data-table tbody")
@@ -44,7 +51,8 @@
 			})
 			.on("click", "button.action-delete", function() {
 				if (confirm("Are you sure that you want to delete the citation?")) {
-					console.log("Should be removed from data source and table.");
+					var index = parseInt($(this).attr('data-id'));
+					deleteData(index);
 				}
 			})
 			drawTable();
