@@ -1,5 +1,6 @@
 ﻿var Popup = (function() {
-	var copyClickHandler = function() {
+	var $_updateButton = $("button#btn_update"),
+		copyClickHandler = function() {
 			var $item = $(this).parents("tr.item"),
 				$citation = $item.find("textarea.citation"),
 				$copyBtn = $(this);
@@ -48,7 +49,9 @@
 				if (message.action === "get_data_completed") {
 					displayData(message.data);
 				}
-			})
+			});
+
+			$_updateButton.click(init);
 		};
 
 	return {
