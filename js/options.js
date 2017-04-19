@@ -1,5 +1,7 @@
 ﻿var Options = (function() {
 	var _dataTable = null,
+		_hiddenTable = $("#hidden_table tbody"),
+		$_exportButton = $("#export"),
 		drawTable = function() {
 			var _data = JSON.parse(localStorage._saved_data || "[]");
 
@@ -16,6 +18,13 @@
 				"</div>");
 
 				_dataTable.row.add(row).draw();
+
+				// _hiddenTable.append($("tr").append(
+				// 	$("<td/>").text(i + 1),
+				// 	$("<td/>").text(_data[i].title),
+				// 	$("<td/>").text(_data[i].copied_at),
+				// 	$("<td/>").text(_data[i].citation)
+				// ));
 			}
 		},
 
@@ -23,6 +32,20 @@
 			var _data = JSON.parse(localStorage._saved_data || "[]");
 			_data[index].citation = citation;
 			localStorage._saved_data = JSON.stringify(_data);
+		},
+
+		exportToExcel = function(e) {
+			// window.open('data:application/vnd.ms-excel,' + $('#hidden_table').html());
+			// e.preventDefault();
+
+			// var data_type = 'data:application/vnd.ms-excel';
+			// var table_div = document.getElementById('hidden_table');
+			// var table_html = table_div.outerHTML.replace(/ /g, '%20');
+
+			// var a = document.createElement('a');
+			// a.href = data_type + ', ' + table_html;
+			// a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
+			// a.click();
 		},
 
 		deleteData = function(index) {
@@ -54,7 +77,9 @@
 					var index = parseInt($(this).attr('data-id'));
 					deleteData(index);
 				}
-			})
+			});
+
+			$_exportButton.click(exportToExcel);
 			drawTable();
 		};
 
