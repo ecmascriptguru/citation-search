@@ -18,7 +18,7 @@ var ContentScript = (function() {
 			var $dataContainer = $("div#shepListView");
 
 			if ($dataContainer.length == 0) {
-				alert("Please open the correct url to get data.");
+				// alert("Please open the correct url to get data.");
 				return false;
 			}
 			var $dataRecords = $dataContainer.find("ol li div.tabrow div.indent");

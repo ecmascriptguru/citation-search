@@ -16,17 +16,17 @@
 			});
 		},
 		displayData = function(data) {
-			var $list = $("ul.list");
+			var $list = $("table.list tbody");
 			$list.children().remove();
 
 			for (var i = 0; i < data.length; i ++) {
-				var $item = $("<li/>").addClass("item row"),
+				var $item = $("<tr/>").addClass("item row"),
 					$citation = $("<textarea/>").addClass("form-control citation").text(data[i].citation),
 					$copyBtn = $("<button/>").addClass("btn btn-info form-control copy").attr('data-title', data[i].title).text("Copy");
 
 				$item.append(
-					$("<div/>").addClass("col-xs-9").append($citation),
-					$("<div/>").addClass("col-xs-3").append($copyBtn)
+					$("<td/>").append($citation),
+					$("<td/>").append($copyBtn)
 				);
 
 				$list.append($item);
