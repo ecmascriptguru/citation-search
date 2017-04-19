@@ -1,10 +1,11 @@
 ﻿var Popup = (function() {
 	var copyClickHandler = function() {
-			var $item = $(this).parents("li.item"),
-				$citation = $item.find("textarea.citation");
+			var $item = $(this).parents("tr.item"),
+				$citation = $item.find("textarea.citation"),
+				$copyBtn = $(this);
 
 			$citation.select();
-			$("li.item button.copied").removeClass("copied").text("Copy");
+			$("tr.item button.copied").removeClass("copied").text("Copy");
 			document.execCommand('copy');
 			chrome.extension.sendMessage({
 				from: "popup",
@@ -12,7 +13,7 @@
 				title: $(this).attr('data-title'),
 				data: $citation.text()
 			}, function(response) {
-				$(this).addClass("copied").text("Copied");
+				$copyBtn.addClass("copied").text("Copied");
 			});
 		},
 		displayData = function(data) {

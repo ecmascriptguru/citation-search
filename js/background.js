@@ -57,6 +57,7 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
 				sendResponse({data: Citation.getData()});
 			} else if (message.action == "copy") {
 				Citation.copy(message.title, message.data);
+				sendResponse({});
 			}
 			break;
 
