@@ -36,12 +36,19 @@
 			}
 		},
 		init = function() {
-			chrome.extension.sendMessage({
+			chrome.runtime.sendMessage({
 				from: "popup",
 				action: "get_data"
 			}, function(response) {
-				displayData(response.data);
+				console.log(response);
+				// displayData(response.data);
 			});
+
+			chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+				if (message.action === "get_data_completed") {
+					displayData(message.data);
+				}
+			})
 		};
 
 	return {

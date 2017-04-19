@@ -36,7 +36,8 @@ var ContentScript = (function() {
 					}
 				}
 			}
-			returndata();
+			// returndata();
+			return _data;
 		},
 		westlaw = function() {
 			var $dataContainer = $("table#co_relatedInfo_table_citingRefs");
@@ -63,7 +64,8 @@ var ContentScript = (function() {
 				}
 			}
 
-			returndata();
+			// returndata();
+			return _data;
 		},
 		init = function() {
 			console.log("init");
@@ -74,9 +76,10 @@ var ContentScript = (function() {
 		},
 		analyze = function() {
 			if (window.location.host.indexOf("advance.lexis.com") === 0) {
-				lexis();
+				return lexis();
 			} else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
-				globalTimer = setInterval(westlaw, 500);
+				// globalTimer = setInterval(westlaw, 500);
+				return westlaw();
 			}
 		};
 		
@@ -90,4 +93,11 @@ var ContentScript = (function() {
 (function(window, jQuery) {
 	ContentScript.init();
 	ContentScript.analyze();
+
+	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+		if (request.action === "get_data") {
+			
+			sendResponse({data: ContentScript.analyze()});
+		}
+	})
 })(window, $);

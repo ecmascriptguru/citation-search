@@ -50,12 +50,40 @@ chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
         chrome.pageAction.hide(tabId);
 });
 
-chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
+// chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
+// 	switch(message.from) {
+// 		case "popup":
+// 			if (message.action == "get_data") {
+// 				sendResponse({data: Citation.getData()});
+// 			} else if (message.action == "copy") {
+// 				Citation.copy(message.title, message.data);
+// 				sendResponse({});
+// 			}
+// 			break;
+
+// 		case "cs":
+// 			if (message.action == "feed_data") {
+// 				Citation.setData(message.data);
+// 			}
+// 			break;
+
+// 		default:
+// 			console.log("Unkown...");
+// 			break;
+// 	}
+// });
+
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+	var respondFunction = sendResponse;
 	switch(message.from) {
 		case "popup":
-			if (message.action == "get_data") {
-				sendResponse({data: Citation.getData()});
-			} else if (message.action == "copy") {
+			if (message.action === "get_data") {
+				chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+					chrome.tabs.sendMessage(tabs[0].id, {action: "get_data"}, function(response) {
+						chrome.runtime.sendMessage({action: "get_data_completed", data: response.data});
+					});
+				});
+			} else if (message.action === "copy") {
 				Citation.copy(message.title, message.data);
 				sendResponse({});
 			}
