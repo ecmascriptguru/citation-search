@@ -5,7 +5,8 @@
         padding: 0;}
         .wrapper table.list tr.item {
             list-style: none;}
-            .wrapper table.list tr.item textarea {
+            .wrapper textarea {
                 resize: none;
-                width: 100%;
+                height: 100px;
+                width: 400px;
             }

@@ -75,12 +75,16 @@ var ContentScript = (function() {
 			return _data;
 		},
 		analyze = function() {
-			if (window.location.host.indexOf("advance.lexis.com") === 0) {
-				return lexis();
-			} else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
-				// globalTimer = setInterval(westlaw, 500);
-				return westlaw();
-			}
+			// if (window.location.host.indexOf("advance.lexis.com") === 0) {
+			// 	return lexis();
+			// } else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
+			// 	// globalTimer = setInterval(westlaw, 500);
+			// 	return westlaw();
+			// }
+
+			var selectedText = window.getSelection().toString();
+			// console.log(document.getSelection());
+			return selectedText;
 		};
 		
 	return {
@@ -96,8 +100,14 @@ var ContentScript = (function() {
 
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		if (request.action === "get_data") {
-			
-			sendResponse({data: ContentScript.analyze()});
+			var text = ContentScript.analyze();
+
+			if (text == "") {
+				alert("Please select text.");
+			} else {
+				
+			}
+			sendResponse({data: text});
 		}
 	})
 })(window, $);

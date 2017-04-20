@@ -1,5 +1,5 @@
 ﻿var Popup = (function() {
-	var $_updateButton = $("button#btn_update"),
+	var $_updateButton = $("button#btn_copy"),
 		copyClickHandler = function() {
 			var $item = $(this).parents("tr.item"),
 				$citation = $item.find("textarea.citation"),
@@ -18,23 +18,7 @@
 			});
 		},
 		displayData = function(data) {
-			var $list = $("table.list tbody");
-			$list.children().remove();
-
-			for (var i = 0; i < data.length; i ++) {
-				var $item = $("<tr/>").addClass("item row"),
-					$citation = $("<textarea/>").addClass("form-control citation").text(data[i].citation),
-					$copyBtn = $("<button/>").addClass("btn btn-info form-control copy").attr('data-title', data[i].title).text("Copy");
-
-				$item.append(
-					$("<td/>").append($citation),
-					$("<td/>").append($copyBtn)
-				);
-
-				$list.append($item);
-
-				$copyBtn.click(copyClickHandler);
-			}
+			$("textarea#selected_text").text("\"searches conducted outside the judicial process, without prior approval by judge or magistrate, are per se unreasonable under the Fourth Amendment.\"\n" + data);
 		},
 		init = function() {
 			chrome.runtime.sendMessage({
@@ -51,7 +35,15 @@
 				}
 			});
 
-			$_updateButton.click(init);
+			$_updateButton.click(function() {
+				var _btn = $(this);
+				$("textarea#selected_text").select();
+				document.execCommand('copy');
+				_btn.text("Copied to Clipboard");
+				window.setTimeout(function() {
+					_btn.text("Copy");
+				}, 3000);
+			});
 		};
 
 	return {
