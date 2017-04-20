@@ -110,9 +110,9 @@ var ContentScript = (function() {
 			}
 
 			if (window.location.host.indexOf("advance.lexis.com") === 0) {
-				highlighted = $(".SS_SH.SS_prior span.SS_un").text();
+				highlighted = $($(".SS_SH.SS_prior")[0]).text();// span.SS_un").text();
 			} else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
-				highlighted = $("em span.co_searchTerm").text();
+				highlighted = $($("span.co_searchTerm")[0]).text();
 			}
 			sendResponse({
 				highlighted: highlighted,
