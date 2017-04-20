@@ -100,14 +100,24 @@ var ContentScript = (function() {
 
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		if (request.action === "get_data") {
-			var text = ContentScript.analyze();
+			var text = ContentScript.analyze(),
+				highlighted = null;
 
 			if (text == "") {
 				alert("Please select text.");
 			} else {
 				
 			}
-			sendResponse({data: text});
+
+			if (window.location.host.indexOf("advance.lexis.com") === 0) {
+				highlighted = $(".SS_SH.SS_prior").text();
+			} else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
+				highlighted = $(".co_searchTerm").text();
+			}
+			sendResponse({
+				highlighted: highlighted,
+				data: text
+			});
 		}
 	})
 })(window, $);

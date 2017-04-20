@@ -17,8 +17,16 @@
 				$copyBtn.addClass("copied").text("Copied");
 			});
 		},
-		displayData = function(data) {
-			$("textarea#selected_text").text("\"searches conducted outside the judicial process, without prior approval by judge or magistrate, are per se unreasonable under the Fourth Amendment.\"\n" + data);
+		displayData = function(data, highlighted) {
+			data = data.trim();
+			highlighted = highlighted.trim();
+			if (data.indexOf("\"") != 0) {
+				data = "\"" + data;
+			}
+			if (data.slice(data.length - 1).indexOf("\"") != 0) {
+				data += "\"";
+			}
+			$("textarea#selected_text").text(data + "\n" + highlighted);
 		},
 		init = function() {
 			chrome.runtime.sendMessage({
@@ -31,7 +39,7 @@
 
 			chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 				if (message.action === "get_data_completed") {
-					displayData(message.data);
+					displayData(message.data, message.highlighted);
 				}
 			});
 

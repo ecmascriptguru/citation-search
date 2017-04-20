@@ -80,7 +80,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 			if (message.action === "get_data") {
 				chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 					chrome.tabs.sendMessage(tabs[0].id, {action: "get_data"}, function(response) {
-						chrome.runtime.sendMessage({action: "get_data_completed", data: response.data});
+						chrome.runtime.sendMessage({action: "get_data_completed", data: response.data, highlighted: response.highlighted});
 					});
 				});
 			} else if (message.action === "copy") {
