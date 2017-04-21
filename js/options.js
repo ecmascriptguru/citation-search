@@ -9,7 +9,7 @@
 
 			for (var i = 0; i < _data.length; i ++) {
 				var row = [i + 1];
-				row.push(_data[i].title);
+				row.push(_data[i].source || "");
 				row.push("<div class='col-xs-12'><textarea data-id='" + i + "' class='form-control citation'>" + _data[i].citation + "</textarea></div>");
 				row.push(_data[i].copied_at);
 				row.push("<div class=''>" +
@@ -18,13 +18,6 @@
 				"</div>");
 
 				_dataTable.row.add(row).draw();
-
-				// _hiddenTable.append($("tr").append(
-				// 	$("<td/>").text(i + 1),
-				// 	$("<td/>").text(_data[i].title),
-				// 	$("<td/>").text(_data[i].copied_at),
-				// 	$("<td/>").text(_data[i].citation)
-				// ));
 			}
 		},
 

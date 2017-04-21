@@ -12,11 +12,11 @@ var Citation = (function() {
 		setData = function(data) {
 			_data = data;
 		},
-		copy = function(title, text) {
+		copy = function(text) {
 			var curSavedData = getSavedData();
 			curSavedData.push({
-				title: title,
 				citation: text,
+				source: JSON.parse(localStorage._source) || "lexis",
 				copied_at: new Date().toISOString().slice(0, 10)
 			});
 			setSavedData(curSavedData);
@@ -50,29 +50,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
         chrome.pageAction.hide(tabId);
 });
 
-// chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
-// 	switch(message.from) {
-// 		case "popup":
-// 			if (message.action == "get_data") {
-// 				sendResponse({data: Citation.getData()});
-// 			} else if (message.action == "copy") {
-// 				Citation.copy(message.title, message.data);
-// 				sendResponse({});
-// 			}
-// 			break;
-
-// 		case "cs":
-// 			if (message.action == "feed_data") {
-// 				Citation.setData(message.data);
-// 			}
-// 			break;
-
-// 		default:
-// 			console.log("Unkown...");
-// 			break;
-// 	}
-// });
-
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 	var respondFunction = sendResponse;
 	switch(message.from) {
@@ -92,7 +69,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 					citation: JSON.parse(localStorage._citation)
 				});
 			} else if (message.action === "copy") {
-				Citation.copy(message.title, message.data);
+				Citation.copy(message.data);
 				sendResponse({});
 			}
 			break;
@@ -103,6 +80,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 			} else if (message.action == "citation") {
 				if (message.data) {
 					localStorage._citation = JSON.stringify(message.data);
+					localStorage._source = JSON.stringify(message.source);
 				}
 			} else if (message.action == "selectedText") {
 				localStorage._citation = JSON.stringify("");

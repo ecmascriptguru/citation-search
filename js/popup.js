@@ -36,17 +36,18 @@
 				displayData(response.selectedText, response.citation);
 			});
 
-			// chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-			// 	if (message.action === "get_data_completed") {
-			// 		displayData(message.selectedText, message.citation);
-			// 	}
-			// });
-
 			$_copyButton.click(function() {
 				var _btn = $(this);
 				$("textarea#selected_text").select();
 				document.execCommand('copy');
 				_btn.text("Copied to Clipboard");
+
+				chrome.extension.sendMessage({
+					from: "popup",
+					action: "copy",
+					data: $("textarea#selected_text").val()
+				});
+				
 				window.setTimeout(function() {
 					_btn.text("Copy");
 				}, 3000);

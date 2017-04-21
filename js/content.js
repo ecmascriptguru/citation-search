@@ -44,6 +44,7 @@ var ContentScript = (function() {
 			chrome.extension.sendMessage({
 				from: "cs",
 				action: "citation",
+				source: "lexis",
 				data: citation
 			});
 		},
@@ -80,6 +81,7 @@ var ContentScript = (function() {
 			chrome.extension.sendMessage({
 				from: "cs",
 				action: "citation",
+				source: "westlaw",
 				data: citation
 			});
 		},
