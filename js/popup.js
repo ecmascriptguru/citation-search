@@ -1,8 +1,8 @@
 ﻿var Popup = (function() {
-	var $_updateButton = $("button#btn_copy"),
+	var $_copyButton = $("button#btn_copy"),
 		copyClickHandler = function() {
 			var $item = $(this).parents("tr.item"),
-				$citation = $item.find("textarea.citation"),
+				$citation = $item.find("textarea.selected_text"),
 				$copyBtn = $(this);
 
 			$citation.select();
@@ -11,7 +11,6 @@
 			chrome.extension.sendMessage({
 				from: "popup",
 				action: "copy",
-				title: $(this).attr('data-title'),
 				data: $citation.text()
 			}, function(response) {
 				$copyBtn.addClass("copied").text("Copied");
@@ -43,7 +42,7 @@
 			// 	}
 			// });
 
-			$_updateButton.click(function() {
+			$_copyButton.click(function() {
 				var _btn = $(this);
 				$("textarea#selected_text").select();
 				document.execCommand('copy');
