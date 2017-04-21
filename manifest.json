@@ -5,7 +5,7 @@
 	"short_name": "Citation Search",
 	"description": "Citation Search",
 	"author": "Alexis Richard",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	
 	"permissions": [
 		"https://advance.lexis.com/*",
