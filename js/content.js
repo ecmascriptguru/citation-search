@@ -85,6 +85,17 @@ var ContentScript = (function() {
 		},
 		init = function() {
 			console.log("init");
+			$(document).mouseup(function() {
+				var txt = window.getSelection().toString();
+
+				if (txt) {
+					chrome.extension.sendMessage({
+						from: "cs",
+						action: "selectedText",
+						data: txt
+					});
+				}
+			});
 			return this;
 		},
 		getData = function() {

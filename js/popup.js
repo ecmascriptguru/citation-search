@@ -34,14 +34,14 @@
 				action: "get_data"
 			}, function(response) {
 				console.log(response);
-				// displayData(response.data);
+				displayData(response.selectedText, response.citation);
 			});
 
-			chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-				if (message.action === "get_data_completed") {
-					displayData(message.selectedText, message.citation);
-				}
-			});
+			// chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+			// 	if (message.action === "get_data_completed") {
+			// 		displayData(message.selectedText, message.citation);
+			// 	}
+			// });
 
 			$_updateButton.click(function() {
 				var _btn = $(this);

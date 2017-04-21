@@ -78,14 +78,18 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 	switch(message.from) {
 		case "popup":
 			if (message.action === "get_data") {
-				chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-					chrome.tabs.sendMessage(tabs[0].id, {action: "get_data"}, function(response) {
-						chrome.runtime.sendMessage({
-							action: "get_data_completed", 
-							selectedText: response.selectedText, 
-							citation: JSON.parse(localStorage._citation)
-						});
-					});
+				// chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+				// 	chrome.tabs.sendMessage(tabs[0].id, {action: "get_data"}, function(response) {
+				// 		chrome.runtime.sendMessage({
+				// 			action: "get_data_completed", 
+				// 			selectedText: response.selectedText, 
+				// 			citation: JSON.parse(localStorage._citation)
+				// 		});
+				// 	});
+				// });
+				sendResponse({
+					selectedText: JSON.parse(localStorage._selectedText),
+					citation: JSON.parse(localStorage._citation)
 				});
 			} else if (message.action === "copy") {
 				Citation.copy(message.title, message.data);
@@ -100,6 +104,9 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 				if (message.data) {
 					localStorage._citation = JSON.stringify(message.data);
 				}
+			} else if (message.action == "selectedText") {
+				localStorage._citation = JSON.stringify("");
+				localStorage._selectedText = JSON.stringify(message.data);
 			}
 			break;
 
