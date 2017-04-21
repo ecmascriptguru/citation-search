@@ -26,7 +26,7 @@
 			if (data.slice(data.length - 1).indexOf("\"") != 0) {
 				data += "\"";
 			}
-			$("textarea#selected_text").text(data + "\n" + citation);
+			$("textarea#selected_text").text(data + " " + citation);
 		},
 		init = function() {
 			chrome.runtime.sendMessage({
