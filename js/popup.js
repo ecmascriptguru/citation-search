@@ -17,7 +17,8 @@
 			});
 		},
 		displayData = function(data, citation) {
-			data = data.trim();
+			data = data.trim().replace("”", "\"");
+			citation = citation.replace("”", "\"");
 			citation = citation.trim();
 			if (data.indexOf("\"") != 0) {
 				data = "\"" + data;
