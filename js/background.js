@@ -81,10 +81,12 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 				if (message.data) {
 					localStorage._citation = JSON.stringify(message.data);
 					localStorage._source = JSON.stringify(message.source);
+					sendResponse();
 				}
 			} else if (message.action == "selectedText") {
 				localStorage._citation = JSON.stringify("");
 				localStorage._selectedText = JSON.stringify(message.data);
+				sendResponse();
 			}
 			break;
 
