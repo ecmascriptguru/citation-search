@@ -17,16 +17,16 @@
 				$copyBtn.addClass("copied").text("Copied");
 			});
 		},
-		displayData = function(data, highlighted) {
+		displayData = function(data, citation) {
 			data = data.trim();
-			highlighted = highlighted.trim();
+			citation = citation.trim();
 			if (data.indexOf("\"") != 0) {
 				data = "\"" + data;
 			}
 			if (data.slice(data.length - 1).indexOf("\"") != 0) {
 				data += "\"";
 			}
-			$("textarea#selected_text").text(data + "\n" + highlighted);
+			$("textarea#selected_text").text(data + "\n" + citation);
 		},
 		init = function() {
 			chrome.runtime.sendMessage({
@@ -39,7 +39,7 @@
 
 			chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 				if (message.action === "get_data_completed") {
-					displayData(message.selectedText, message.highlighted);
+					displayData(message.selectedText, message.citation);
 				}
 			});
 
