@@ -39,7 +39,7 @@
 
 			chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 				if (message.action === "get_data_completed") {
-					displayData(message.data, message.highlighted);
+					displayData(message.selectedText, message.highlighted);
 				}
 			});
 

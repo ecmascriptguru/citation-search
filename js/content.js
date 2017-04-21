@@ -15,7 +15,8 @@ var ContentScript = (function() {
 			});
 		},
 		lexis = function() {
-			var $dataContainer = $("div#shepListView");
+			var $dataContainer = $("div#shepListView"),
+				citation = null;
 
 			if ($dataContainer.length == 0) {
 				// alert("Please open the correct url to get data.");
@@ -29,15 +30,22 @@ var ContentScript = (function() {
 					var $tempCitation = $dataRecords.eq(i).find("span.hit"),
 						$title = $dataRecords.eq(i).find("h2.doc-title");
 					if (_data.indexOf($tempCitation.text()) == -1) {
-						_data.push({
-							title: $title.find("span").eq(0).text(),
-							citation: $tempCitation.text().trim()
-						});
+						citation = $tempCitation.text().trim();
+						break;
+						// _data.push({
+						// 	title: $title.find("span").eq(0).text(),
+						// 	citation: $tempCitation.text().trim()
+						// });
 					}
 				}
 			}
 			// returndata();
-			return _data;
+			// return _data;
+			chrome.extension.sendMessage({
+				from: "cs",
+				action: "citation",
+				data: citation
+			});
 		},
 		westlaw = function() {
 			var $dataContainer = $("table#co_relatedInfo_table_citingRefs");
@@ -50,22 +58,30 @@ var ContentScript = (function() {
 			clearInterval(globalTimer);
 			counter = 0;
 
-			var $records = $dataContainer.find("tbody tr td.co_detailsTable_content");
+			var $records = $dataContainer.find("tbody tr td.co_detailsTable_content"),
+				citation = null;
 			_data = [];
 
 			for (var i = 0; i < $records.length; i ++) {
 				var $tempCitation = $records.eq(i).find("div.co_snippet a.co_snippet_link span.co_searchTerm"),
 					$name = $records.eq(i).find("a.co_relatedInfo_grid_documentLink");
 				if (_data.indexOf($tempCitation.text()) == -1) {
-					_data.push({
-						title: $name.text().trim(),
-						citation: $tempCitation.text().trim()
-					});
+					citation =  $tempCitation.text().trim();
+					break;
+					// _data.push({
+					// 	title: $name.text().trim(),
+					// 	citation: $tempCitation.text().trim()
+					// });
 				}
 			}
 
 			// returndata();
-			return _data;
+			// return _data;
+			chrome.extension.sendMessage({
+				from: "cs",
+				action: "citation",
+				data: citation
+			});
 		},
 		init = function() {
 			console.log("init");
@@ -75,16 +91,16 @@ var ContentScript = (function() {
 			return _data;
 		},
 		analyze = function() {
-			// if (window.location.host.indexOf("advance.lexis.com") === 0) {
-			// 	return lexis();
-			// } else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
-			// 	// globalTimer = setInterval(westlaw, 500);
-			// 	return westlaw();
-			// }
+			if (window.location.host.indexOf("advance.lexis.com") === 0) {
+				lexis();
+			} else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
+				globalTimer = setInterval(westlaw, 500);
+				// return westlaw();
+			}
 
-			var selectedText = window.getSelection().toString();
-			// console.log(document.getSelection());
-			return selectedText;
+			// var selectedText = window.getSelection().toString();
+			// // console.log(document.getSelection());
+			// return selectedText;
 		};
 		
 	return {
@@ -103,20 +119,19 @@ var ContentScript = (function() {
 			var text = ContentScript.analyze(),
 				highlighted = null;
 
-			if (text == "") {
-				alert("Please select text.");
-			} else {
+			// if (text == "") {
+			// 	alert("Please select text.");
+			// } else {
 				
-			}
+			// }
 
-			if (window.location.host.indexOf("advance.lexis.com") === 0) {
-				highlighted = $($(".SS_SH.SS_prior")[0]).text();// span.SS_un").text();
-			} else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
-				highlighted = $($("span.co_searchTerm")[0]).text();
-			}
+			// if (window.location.host.indexOf("advance.lexis.com") === 0) {
+			// 	highlighted = $($("span.sentence")[0]).find("span.hit").text();// span.SS_un").text();
+			// } else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
+			// 	highlighted = $($("span.co_searchTerm")[0]).text();
+			// }
 			sendResponse({
-				highlighted: highlighted,
-				data: text
+				selectedText: window.getSelection().toString()
 			});
 		}
 	})

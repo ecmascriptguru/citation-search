@@ -80,7 +80,11 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 			if (message.action === "get_data") {
 				chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 					chrome.tabs.sendMessage(tabs[0].id, {action: "get_data"}, function(response) {
-						chrome.runtime.sendMessage({action: "get_data_completed", data: response.data, highlighted: response.highlighted});
+						chrome.runtime.sendMessage({
+							action: "get_data_completed", 
+							selectedText: response.selectedText, 
+							highlighted: localStorage._citation
+						});
 					});
 				});
 			} else if (message.action === "copy") {
@@ -92,6 +96,8 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 		case "cs":
 			if (message.action == "feed_data") {
 				Citation.setData(message.data);
+			} else if (message.action == "citation") {
+				localStorage._citation = JSON.stringify(message.data);
 			}
 			break;
 
