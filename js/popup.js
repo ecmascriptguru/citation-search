@@ -1,32 +1,40 @@
 ﻿var Popup = (function() {
 	var $_copyButton = $("button#btn_copy"),
-		copyClickHandler = function() {
-			var $item = $(this).parents("tr.item"),
-				$citation = $item.find("textarea.selected_text"),
-				$copyBtn = $(this);
+		$_citationsDropdown = $("#citations"),
+		selectedText = null,
+		citations = null,
 
-			$citation.select();
-			$("tr.item button.copied").removeClass("copied").text("Copy");
-			document.execCommand('copy');
-			chrome.extension.sendMessage({
-				from: "popup",
-				action: "copy",
-				data: $citation.text()
-			}, function(response) {
-				$copyBtn.addClass("copied").text("Copied");
-			});
+		wrapWithQuotes = function(str) {
+			str = str.trim().replace("”", "\"");
+			if (str.indexOf("\"") != 0) {
+				str = "\"" + str;
+			}
+			if (str.slice(str.length - 1).indexOf("\"") != 0) {
+				str += "\"";
+			}
+
+			return str;
 		},
-		displayData = function(data, citation) {
-			data = data.trim().replace("”", "\"");
-			citation = citation.replace("”", "\"");
-			citation = citation.trim();
-			if (data.indexOf("\"") != 0) {
-				data = "\"" + data;
+
+		citationsChangeHandler = function() {
+			data = wrapWithQuotes(selectedText);
+			citation = $(this).val().replace("”", "\"").trim();
+			$("textarea#selected_text").text(data + " " + $(this).val());
+		},
+
+		displayData = function(data, citations) {
+			selectedText = data;
+			citations = citations;
+			$_citationsDropdown.children().remove();
+			for (var i = 0; i < citations.length; i++) {
+				$("<option/>").val(citations[i]).text(citations[i]).appendTo($_citationsDropdown);
 			}
-			if (data.slice(data.length - 1).indexOf("\"") != 0) {
-				data += "\"";
-			}
+
+			data = wrapWithQuotes(data);
+			citation = citations[0].replace("”", "\"").trim();
 			$("textarea#selected_text").text(data + " " + citation);
+			console.log($_citationsDropdown);
+			$_citationsDropdown.change(citationsChangeHandler);
 		},
 		init = function() {
 			chrome.runtime.sendMessage({
@@ -34,7 +42,18 @@
 				action: "get_data"
 			}, function(response) {
 				console.log(response);
-				displayData(response.selectedText, response.citation);
+				// displayData(response.selectedText, response.citation);
+			});
+
+			chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+				if (message.from == "background" && message.action == "data_arrived") {
+					var citations = message.citations,
+						selectedText = message.selectedText;
+
+					displayData(selectedText, citations);
+					console.log(message.selectedText);
+					console.log(message.citations);
+				}
 			});
 
 			$_copyButton.click(function() {

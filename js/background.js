@@ -55,19 +55,21 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 	switch(message.from) {
 		case "popup":
 			if (message.action === "get_data") {
-				// chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-				// 	chrome.tabs.sendMessage(tabs[0].id, {action: "get_data"}, function(response) {
-				// 		chrome.runtime.sendMessage({
-				// 			action: "get_data_completed", 
-				// 			selectedText: response.selectedText, 
-				// 			citation: JSON.parse(localStorage._citation)
-				// 		});
-				// 	});
-				// });
-				sendResponse({
-					selectedText: JSON.parse(localStorage._selectedText),
-					citation: JSON.parse(localStorage._citation)
+				chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+					chrome.tabs.sendMessage(tabs[0].id, {action: "get_data"}, function(response) {
+						localStorage._source = JSON.stringify(response.source);
+						chrome.runtime.sendMessage({
+							from: "background",
+							action: "data_arrived",
+							selectedText: JSON.parse(localStorage._selectedText), 
+							citations: response.citations
+						});
+					});
 				});
+				// sendResponse({
+				// 	selectedText: JSON.parse(localStorage._selectedText),
+				// 	citation: JSON.parse(localStorage._citation)
+				// });
 			} else if (message.action === "copy") {
 				Citation.copy(message.data);
 				sendResponse({});

@@ -15,8 +15,7 @@ var ContentScript = (function() {
 			});
 		},
 		lexis = function() {
-			var $dataContainer = $("div#shepListView"),
-				citation = null;
+			var $dataContainer = $("div#shepListView");
 
 			if ($dataContainer.length == 0) {
 				// alert("Please open the correct url to get data.");
@@ -29,26 +28,24 @@ var ContentScript = (function() {
 				if ($dataRecords.eq(i).find("a.citedby").text().toLowerCase().indexOf("cited by") > -1) {
 					var $tempCitation = $dataRecords.eq(i).find("span.hit"),
 						$title = $dataRecords.eq(i).find("h2.doc-title");
-					if (_data.indexOf($tempCitation.text()) == -1) {
-						citation = $tempCitation.text().trim();
-						break;
-						// _data.push({
-						// 	title: $title.find("span").eq(0).text(),
-						// 	citation: $tempCitation.text().trim()
-						// });
+					if ($tempCitation.text() && _data.indexOf($tempCitation.text()) == -1) {
+						_data.push($tempCitation.text().trim());
 					}
 				}
 			}
 			// returndata();
-			// return _data;
-			chrome.extension.sendMessage({
-				from: "cs",
-				action: "citation",
+			return {
 				source: "lexis",
-				data: citation
-			}, function() {
+				citations: _data
+			};
+			// chrome.extension.sendMessage({
+			// 	from: "cs",
+			// 	action: "citation",
+			// 	source: "lexis",
+			// 	data: citation
+			// }, function() {
 				
-			});
+			// });
 		},
 		westlaw = function() {
 			var $dataContainer = $("table#co_relatedInfo_table_citingRefs");
@@ -62,32 +59,29 @@ var ContentScript = (function() {
 			counter = 0;
 
 			var $records = $dataContainer.find("tbody tr td.co_detailsTable_content"),
-				citation = null;
-			_data = [];
+				_data = [];
 
 			for (var i = 0; i < $records.length; i ++) {
 				var $tempCitation = $records.eq(i).find("div.co_snippet a.co_snippet_link span.co_searchTerm"),
 					$name = $records.eq(i).find("a.co_relatedInfo_grid_documentLink");
-				if (_data.indexOf($tempCitation.text()) == -1) {
-					citation =  $tempCitation.text().trim();
-					break;
-					// _data.push({
-					// 	title: $name.text().trim(),
-					// 	citation: $tempCitation.text().trim()
-					// });
+				if ($tempCitation.text() && _data.indexOf($tempCitation.text()) == -1) {
+					_data.push($tempCitation.text().trim());
 				}
 			}
 
 			// returndata();
-			// return _data;
-			chrome.extension.sendMessage({
-				from: "cs",
-				action: "citation",
+			return {
 				source: "westlaw",
-				data: citation
-			}, function() {
-				//
-			});
+				citations: _data
+			};
+			// chrome.extension.sendMessage({
+			// 	from: "cs",
+			// 	action: "citation",
+			// 	source: "westlaw",
+			// 	data: citation
+			// }, function() {
+			// 	//
+			// });
 		},
 		init = function() {
 			console.log("init");
@@ -121,10 +115,10 @@ var ContentScript = (function() {
 		},
 		analyze = function() {
 			if (window.location.host.indexOf("advance.lexis.com") === 0) {
-				lexis();
+				return lexis();
 			} else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
-				globalTimer = setInterval(westlaw, 500);
-				// return westlaw();
+				// globalTimer = setInterval(westlaw, 500);
+				return westlaw();
 			}
 
 			// var selectedText = window.getSelection().toString();
@@ -141,7 +135,7 @@ var ContentScript = (function() {
 
 (function(window, jQuery) {
 	ContentScript.init();
-	ContentScript.analyze();
+	// ContentScript.analyze();
 
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		if (request.action === "get_data") {
@@ -159,9 +153,7 @@ var ContentScript = (function() {
 			// } else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
 			// 	highlighted = $($("span.co_searchTerm")[0]).text();
 			// }
-			sendResponse({
-				selectedText: window.getSelection().toString()
-			});
+			sendResponse(ContentScript.analyze());
 		}
 	})
 })(window, $);

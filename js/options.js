@@ -5,7 +5,7 @@
 		drawTable = function() {
 			var _data = JSON.parse(localStorage._saved_data || "[]");
 
-			_dataTable.clear();
+			_dataTable.clear().draw();
 
 			for (var i = 0; i < _data.length; i ++) {
 				var row = [i + 1];
