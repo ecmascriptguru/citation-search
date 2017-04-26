@@ -88,21 +88,23 @@ var ContentScript = (function() {
 			$(document).mouseup(function() {
 				var txt = window.getSelection().toString();
 
-				if (txt) {
+				if (txt && txt.length > 0) {
 					chrome.extension.sendMessage({
 						from: "cs",
 						action: "selectedText",
 						data: txt
-					}, function() {
-						if (window.location.host.indexOf("advance.lexis.com") === 0) {
-							var $citingRefLink = $("#Shepards a[data-action='sheppreview']");
-							if ($citingRefLink.length > 0) {
-								$($citingRefLink[0]).find("span").click();
-							}
-						} else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
-							var $citingRefLink = $('a#coid_relatedInfo_kcCitingReferences_link');
-							if ($citingRefLink.length > 0) {
-								$citingRefLink[0].click();
+					}, function(response) {
+						if (response.started) {
+							if (window.location.host.indexOf("advance.lexis.com") === 0) {
+								var $citingRefLink = $("#Shepards a[data-action='sheppreview']");
+								if ($citingRefLink.length > 0) {
+									$($citingRefLink[0]).find("span").click();
+								}
+							} else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
+								var $citingRefLink = $('a#coid_relatedInfo_kcCitingReferences_link');
+								if ($citingRefLink.length > 0) {
+									$citingRefLink[0].click();
+								}
 							}
 						}
 					});

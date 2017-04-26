@@ -101,7 +101,9 @@
 			});
 
 			$_stopButton.click(function() {
-				localStorage._started = JSON.stringify("false");
+				localStorage._started = JSON.stringify(false);
+				localStorage._citation = JSON.stringify("");
+				localStorage._selectedText = JSON.stringify("");
 				showActivatePanel();
 			});
 				
