@@ -50,6 +50,16 @@ chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
         chrome.pageAction.hide(tabId);
 });
 
+chrome.runtime.onInstalled.addListener(function() {
+	chrome.tabs.query({}, function(tabs) {
+		for (let i = 0; i < tabs.length; i ++) {
+			if (tabs[i].url.indexOf("https://advance.lexis.com/") == 0 || tabs[i].url.indexOf("https://1.next.westlaw.com/") == 0) {
+				chrome.tabs.reload(tabs[i].id, {bypassCache: true});
+			}
+		}
+	})
+})
+
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 	var respondFunction = sendResponse;
 	switch(message.from) {
