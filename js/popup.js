@@ -1,5 +1,7 @@
 ﻿var Popup = (function() {
 	var $_copyButton = $("button#btn_copy"),
+		$_startButton = $("button#start"),
+		$_stopButton = $("button#stop"),
 		$_citationsDropdown = $("#citations"),
 		selectedText = null,
 		citations = null,
@@ -22,6 +24,16 @@
 			$("textarea#selected_text").text(data + " " + $(this).val());
 		},
 
+		showActivatePanel = function() {
+			$("#activate-panel").show();
+			$("#main-panel").hide();
+		},
+
+		showMainPanel = function() {
+			$("#activate-panel").hide();
+			$("#main-panel").show();
+		},
+
 		displayData = function(data, citations) {
 			selectedText = data;
 			citations = citations;
@@ -37,23 +49,38 @@
 			$_citationsDropdown.change(citationsChangeHandler);
 		},
 		init = function() {
-			chrome.runtime.sendMessage({
-				from: "popup",
-				action: "get_data"
-			}, function(response) {
-				console.log(response);
-				// displayData(response.selectedText, response.citation);
-			});
+			let started = JSON.parse(localStorage._started || "false");
 
-			chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-				if (message.from == "background" && message.action == "data_arrived") {
-					var citations = message.citations,
-						selectedText = message.selectedText;
+			if (started) {
+				showMainPanel();
 
-					displayData(selectedText, citations);
-					console.log(message.selectedText);
-					console.log(message.citations);
-				}
+				chrome.runtime.sendMessage({
+					from: "popup",
+					action: "get_data"
+				}, function(response) {
+					console.log(response);
+					// displayData(response.selectedText, response.citation);
+				});
+
+				chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+					if (message.from == "background" && message.action == "data_arrived") {
+						var citations = message.citations,
+							selectedText = message.selectedText;
+
+						displayData(selectedText, citations);
+						console.log(message.selectedText);
+						console.log(message.citations);
+					}
+				});
+
+			
+			} else {
+				showActivatePanel();
+			}
+
+			$_startButton.click(function() {
+				localStorage._started = JSON.stringify(true);
+				showMainPanel();
 			});
 
 			$_copyButton.click(function() {
@@ -72,6 +99,12 @@
 					_btn.text("Copy");
 				}, 3000);
 			});
+
+			$_stopButton.click(function() {
+				localStorage._started = JSON.stringify("false");
+				showActivatePanel();
+			});
+				
 		};
 
 	return {
