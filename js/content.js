@@ -14,6 +14,37 @@ var ContentScript = (function() {
 				console.log(response);
 			});
 		},
+
+		injectModal = function() {
+			let $modalContainer = $("<div/>").attr("id", "citation-search-modal-container"),
+				$modalCitationOption = $("<select/>").attr("id", "citation-search-citations"),
+				$modalText = $("<textarea/>").attr("id", "citation-search-result"),
+				
+				$modalCloseBtn = $("<button/>").attr("id", "citation-search-btn-close").text("Close"),
+				$modalCopyBtn = $("<button/>").attr("id", "citation-search-btn-copy").text("Copy"),
+				$body = $("body");
+
+			$body.append( 
+				$modalContainer.append(
+					$modalCitationOption,
+					$modalText,
+					$("<div/>").addClass("controller-container").append(
+						$modalCloseBtn,
+						$modalCopyBtn
+					)
+				)
+			);
+
+			$modalCloseBtn.click(function() {
+				$modalContainer.hide();
+			});
+
+			$modalCopyBtn.click(function() {
+				$modalText.select();
+				document.execCommand('copy');
+			});
+		},
+
 		lexis = function() {
 			var $dataContainer = $("div#shepListView");
 
@@ -85,6 +116,7 @@ var ContentScript = (function() {
 		},
 		init = function() {
 			console.log("init");
+			injectModal();
 			$(document).mouseup(function() {
 				var txt = window.getSelection().toString();
 
