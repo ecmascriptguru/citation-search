@@ -54,24 +54,24 @@
 			if (started) {
 				showMainPanel();
 
-				chrome.runtime.sendMessage({
-					from: "popup",
-					action: "get_data"
-				}, function(response) {
-					console.log(response);
-					// displayData(response.selectedText, response.citation);
-				});
+				// chrome.runtime.sendMessage({
+				// 	from: "popup",
+				// 	action: "get_data"
+				// }, function(response) {
+				// 	console.log(response);
+				// 	// displayData(response.selectedText, response.citation);
+				// });
 
-				chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-					if (message.from == "background" && message.action == "data_arrived") {
-						var citations = message.citations,
-							selectedText = message.selectedText;
+				// chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+				// 	if (message.from == "background" && message.action == "data_arrived") {
+				// 		var citations = message.citations,
+				// 			selectedText = message.selectedText;
 
-						displayData(selectedText, citations);
-						console.log(message.selectedText);
-						console.log(message.citations);
-					}
-				});
+				// 		displayData(selectedText, citations);
+				// 		console.log(message.selectedText);
+				// 		console.log(message.citations);
+				// 	}
+				// });
 
 			
 			} else {
@@ -83,22 +83,22 @@
 				showMainPanel();
 			});
 
-			$_copyButton.click(function() {
-				var _btn = $(this);
-				$("textarea#selected_text").select();
-				document.execCommand('copy');
-				_btn.text("Copied to Clipboard");
+			// $_copyButton.click(function() {
+			// 	var _btn = $(this);
+			// 	$("textarea#selected_text").select();
+			// 	document.execCommand('copy');
+			// 	_btn.text("Copied to Clipboard");
 
-				chrome.extension.sendMessage({
-					from: "popup",
-					action: "copy",
-					data: $("textarea#selected_text").val()
-				});
+			// 	chrome.extension.sendMessage({
+			// 		from: "popup",
+			// 		action: "copy",
+			// 		data: $("textarea#selected_text").val()
+			// 	});
 				
-				window.setTimeout(function() {
-					_btn.text("Copy");
-				}, 3000);
-			});
+			// 	window.setTimeout(function() {
+			// 		_btn.text("Copy");
+			// 	}, 3000);
+			// });
 
 			$_stopButton.click(function() {
 				localStorage._started = JSON.stringify(false);

@@ -16,6 +16,18 @@ var ContentScript = (function() {
 			});
 		},
 
+		wrapWithQuotes = function(str) {
+			str = str.trim().replace("”", "\"");
+			if (str.indexOf("\"") != 0) {
+				str = "\"" + str;
+			}
+			if (str.slice(str.length - 1).indexOf("\"") != 0) {
+				str += "\"";
+			}
+
+			return str;
+		},
+
 		injectModal = function() {
 			let $modalContainer = $("<div/>").attr("id", "citation-search-modal-container").css({display: "none"}),
 				$header = $("<div/>").addClass("citation-search-modal-header").append($("<h2/>").text("Data Harvesting BOT")),
@@ -45,7 +57,9 @@ var ContentScript = (function() {
 			$modalCitationOption.change(function() {
 				let _citation = $(this).val();
 
-				$modalText.val(_selectedText + "\n" + _citation);
+				let data = wrapWithQuotes(_selectedText);
+				_citation = _citation.replace("”", "\"").trim();
+				$modalText.val(data + " " + _citation);
 			});
 
 			$modalCloseBtn.click(function() {
@@ -123,6 +137,7 @@ var ContentScript = (function() {
 
 			$("#citation-search-modal-container").show();
 		},
+
 		init = function() {
 			console.log("init");
 			injectModal();
