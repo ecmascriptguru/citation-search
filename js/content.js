@@ -153,6 +153,10 @@ var ContentScript = (function() {
 								}
 							}, 500);
 						}
+						chrome.runtime.sendMessage({
+							from: "cs",
+							action: "remove_selectedText"
+						});
 					} else {
 						$(document).mouseup(function() {
 						var txt = window.getSelection().toString();

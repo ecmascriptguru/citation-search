@@ -104,6 +104,8 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 					started: JSON.parse(localStorage._started),
 					selectedText: JSON.parse(localStorage._selectedText)
 				});
+			} else if (message.action == "remove_selectedText") {
+				localStorage._selectedText = JSON.stringify(null);
 			}
 			break;
 
