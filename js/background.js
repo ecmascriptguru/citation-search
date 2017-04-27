@@ -99,6 +99,11 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 				localStorage._citation = JSON.stringify("");
 				localStorage._selectedText = JSON.stringify(message.data);
 				sendResponse({started: JSON.parse(localStorage._started || "false")});
+			} else if (message.action == "status") {
+				sendResponse({
+					started: JSON.parse(localStorage._started),
+					selectedText: JSON.parse(localStorage._selectedText)
+				});
 			}
 			break;
 

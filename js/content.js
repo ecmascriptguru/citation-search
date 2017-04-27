@@ -5,6 +5,7 @@ var globalTimer = null,
 
 var ContentScript = (function() {
 	var _data = [],
+		_selectedText = "",
 		returndata = function() {
 			chrome.extension.sendMessage({
 				from: "cs",
@@ -16,24 +17,36 @@ var ContentScript = (function() {
 		},
 
 		injectModal = function() {
-			let $modalContainer = $("<div/>").attr("id", "citation-search-modal-container"),
+			let $modalContainer = $("<div/>").attr("id", "citation-search-modal-container").css({display: "none"}),
+				$header = $("<div/>").addClass("citation-search-modal-header").append($("<h2/>").text("Data Harvesting BOT")),
+				$modalBody = $("<div/>").addClass("citation-search-modal-body"),
+				$modalFooter = $("<div/>").addClass("citation-search-modal-footer"),
 				$modalCitationOption = $("<select/>").attr("id", "citation-search-citations"),
 				$modalText = $("<textarea/>").attr("id", "citation-search-result"),
 				
-				$modalCloseBtn = $("<button/>").attr("id", "citation-search-btn-close").text("Close"),
-				$modalCopyBtn = $("<button/>").attr("id", "citation-search-btn-copy").text("Copy"),
+				$modalCloseBtn = $("<button/>").attr("id", "citation-search-btn-close").addClass("btn btn-danger").text("Close").css({float:"left"}),
+				$modalCopyBtn = $("<button/>").attr("id", "citation-search-btn-copy").addClass("btn btn-primary").text("Copy").css({float:"right"}),
 				$body = $("body");
 
 			$body.append( 
 				$modalContainer.append(
-					$modalCitationOption,
-					$modalText,
-					$("<div/>").addClass("controller-container").append(
+					$header,
+					$modalBody.append(
+						$modalCitationOption,
+						$modalText
+					),
+					$modalFooter.append(
 						$modalCloseBtn,
 						$modalCopyBtn
 					)
 				)
 			);
+
+			$modalCitationOption.change(function() {
+				let _citation = $(this).val();
+
+				$modalText.val(_selectedText + "\n" + _citation);
+			});
 
 			$modalCloseBtn.click(function() {
 				$modalContainer.hide();
@@ -64,30 +77,22 @@ var ContentScript = (function() {
 					}
 				}
 			}
-			// returndata();
+			
 			return {
 				source: "lexis",
 				citations: _data
 			};
-			// chrome.extension.sendMessage({
-			// 	from: "cs",
-			// 	action: "citation",
-			// 	source: "lexis",
-			// 	data: citation
-			// }, function() {
-				
-			// });
 		},
 		westlaw = function() {
 			var $dataContainer = $("table#co_relatedInfo_table_citingRefs");
 
-			if ($dataContainer.length == 0 && counter < 50) {
-				counter++;
-				return false;
-			}
+			// if ($dataContainer.length == 0 && counter < 50) {
+			// 	counter++;
+			// 	return false;
+			// }
 
-			clearInterval(globalTimer);
-			counter = 0;
+			// clearInterval(globalTimer);
+			// counter = 0;
 
 			var $records = $dataContainer.find("tbody tr td.co_detailsTable_content"),
 				_data = [];
@@ -100,48 +105,84 @@ var ContentScript = (function() {
 				}
 			}
 
-			// returndata();
 			return {
 				source: "westlaw",
 				citations: _data
 			};
-			// chrome.extension.sendMessage({
-			// 	from: "cs",
-			// 	action: "citation",
-			// 	source: "westlaw",
-			// 	data: citation
-			// }, function() {
-			// 	//
-			// });
+		},
+
+		updateModal = function(analysis) {
+			let _citations = analysis.citations,
+				$citations = $("#citation-search-citations");
+
+			$citations.children().remove();
+			for (let i = 0; i < _citations.length; i ++) {
+				$citations.append($("<option/>").val(_citations[i]).text(_citations[i]));
+			}
+			$citations.val(_citations[0]).change();
+
+			$("#citation-search-modal-container").show();
 		},
 		init = function() {
 			console.log("init");
 			injectModal();
-			$(document).mouseup(function() {
-				var txt = window.getSelection().toString();
+			chrome.extension.sendMessage({
+				from: "cs",
+				action: "status"
+			}, function(status) {
+				if (status.started) {
+					if (status.selectedText) {
+						_selectedText = status.selectedText;
 
-				if (txt && txt.length > 0) {
-					chrome.extension.sendMessage({
-						from: "cs",
-						action: "selectedText",
-						data: txt
-					}, function(response) {
-						if (response.started) {
-							if (window.location.host.indexOf("advance.lexis.com") === 0) {
-								var $citingRefLink = $("#Shepards a[data-action='sheppreview']");
-								if ($citingRefLink.length > 0) {
-									$($citingRefLink[0]).find("span").click();
+						if (window.location.href.indexOf("https://advance.lexis.com/") == 0) {
+							globalTimer = window.setInterval(function() {
+								if ($("div#shepListView").length > 0) {
+									clearInterval(globalTimer);
+									let _analysis = lexis();
+									console.log(_analysis);
+									updateModal(_analysis);
 								}
-							} else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
-								var $citingRefLink = $('a#coid_relatedInfo_kcCitingReferences_link');
-								if ($citingRefLink.length > 0) {
-									$citingRefLink[0].click();
+							}, 500);
+						} else if (window.location.href.indexOf("https://1.next.westlaw.com/") == 0) {
+							globalTimer = window.setInterval(function() {
+								if ($("table#co_relatedInfo_table_citingRefs").length > 0) {
+									clearInterval(globalTimer);
+									let _analysis = westlaw();
+									console.log(_analysis);
+									updateModal(_analysis);
 								}
-							}
+							}, 500);
+						}
+					} else {
+						$(document).mouseup(function() {
+						var txt = window.getSelection().toString();
+
+						if (txt && txt.length > 0) {
+							chrome.extension.sendMessage({
+								from: "cs",
+								action: "selectedText",
+								data: txt
+							}, function(response) {
+								if (response.started) {
+									if (window.location.host.indexOf("advance.lexis.com") === 0) {
+										var $citingRefLink = $("#Shepards a[data-action='sheppreview']");
+										if ($citingRefLink.length > 0) {
+											$($citingRefLink[0]).find("span").click();
+										}
+									} else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
+										var $citingRefLink = $('a#coid_relatedInfo_kcCitingReferences_link');
+										if ($citingRefLink.length > 0) {
+											$citingRefLink[0].click();
+										}
+									}
+								}
+							});
 						}
 					});
+					}
 				}
-			});
+			})
+					
 			return this;
 		},
 		getData = function() {
@@ -151,13 +192,8 @@ var ContentScript = (function() {
 			if (window.location.host.indexOf("advance.lexis.com") === 0) {
 				return lexis();
 			} else if (window.location.host.indexOf("1.next.westlaw.com") === 0) {
-				// globalTimer = setInterval(westlaw, 500);
 				return westlaw();
 			}
-
-			// var selectedText = window.getSelection().toString();
-			// // console.log(document.getSelection());
-			// return selectedText;
 		};
 		
 	return {
