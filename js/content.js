@@ -69,6 +69,19 @@ var ContentScript = (function() {
 			$modalCopyBtn.click(function() {
 				$modalText.select();
 				document.execCommand('copy');
+
+				let _btn = $(this);
+				_btn.text("Copied to Clipboard");
+
+				chrome.extension.sendMessage({
+					from: "popup",
+					action: "copy",
+					data: $modalText.val()
+				});
+				
+				window.setTimeout(function() {
+					_btn.text("Copy");
+				}, 3000);
 			});
 		},
 
@@ -135,6 +148,7 @@ var ContentScript = (function() {
 			}
 			$citations.val(_citations[0]).change();
 
+			$("#citation-search-btn-copy").attr('data-source', analysis.source);
 			$("#citation-search-modal-container").show();
 		},
 
