@@ -58,8 +58,16 @@ var ContentScript = (function() {
 				let _citation = $(this).val();
 
 				let data = wrapWithQuotes(_selectedText);
+				if (!data) {
+					return false;
+				}
+				data = data.replace(/\"/g, '').trim();
+				data = "“" + data + "”";
 				_citation = _citation.replace("”", "\"").trim();
-				$modalText.val(data + " " + _citation);
+				if (_citation.substr(_citation.length - 1).indexOf(".") == -1) {
+					_citation += ".";
+				}
+				$modalText.val(data + "  " + _citation);
 			});
 
 			$modalCloseBtn.click(function() {
